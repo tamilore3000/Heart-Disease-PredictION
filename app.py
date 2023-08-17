@@ -34,7 +34,7 @@ if (selected == 'Heart Disease Prediction'):
     data['Age'] = pd.to_numeric(data['Age'], errors='coerce')
 
     # Define the input fields in Streamlit
-    age = st.slider('Age', min_value=int(data['Age'].min()), max_value=int(data['Age'].max()), value=int(data['Age'].median()))
+    age = st.slider('Age', min_value=0, max_value=150, value=int(data['Age'].median()))
     sex = st.selectbox('Sex', data['Sex'].unique())
 
     # Replace the chest_pain_type_mapping with full text representation
