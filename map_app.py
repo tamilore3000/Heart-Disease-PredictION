@@ -115,22 +115,58 @@ def app():
 
 if (selected == 'About'):
 
-    st.title("About")
+    st.title("About Heart Disease Prediction Using Machine Learning")
     st.write('''
     ----
-    
+    ## Welcome to the "Heart Disease Prediction Using Machine Learning" App!
 
-    *Welcome to the Heart Disease Prediction using ML app! This project aims to provide a simple yet effective way to predict the presence of heart disease in patients.*
+    This app is designed to provide a powerful tool for predicting the presence of heart disease in patients based on various health parameters. By leveraging machine learning techniques, I aim to assist medical professionals in making accurate predictions about heart health.
 
-    *The dataset used for this project was sourced from the cleveland heart disease dataset UCI repository. We made use of common and traditional machine learning techniques and steps, including data preprocessing, feature selection, and model training. Three algorithms were used in this project, namely Artificial Neural Networks (ANN), Logistic Regression, and Random Forest.*
+    ### Project Overview:
 
-    *To select the best model, we performed hyperparameter tuning on all three models, and ultimately selected the ANN model for deployment.*
+    In the pursuit of creating an effective heart disease prediction model, I have utilized a diverse dataset containing a wide range of health metrics. By analyzing and understanding the relationship between these metrics and the presence of heart disease, I've developed a robust machine learning model.
 
-    *We believe that this app can be a valuable tool in the healthcare industry, providing doctors and medical professionals with an efficient way to predict the presence of heart disease in their patients.*
+    ### Dataset Description:
 
-    *Thank you for using the Heart Disease Prediction using ML app. If you have any feedback or suggestions, please feel free to reach out to us.*
+    The dataset used in this project contains information about various health parameters of patients. Here's a breakdown of the dataset columns:
 
+    - **Age:** Age of the patient [years]
+    - **Sex:** Sex of the patient [Male, Female]
+    - **ChestPainType:** Chest pain type [Typical Angina, Atypical Angina, Non-Anginal Pain, Asymptomatic]
+    - **RestingBP:** Resting blood pressure [mm Hg]
+    - **Cholesterol:** Serum cholesterol [mm/dl]
+    - **FastingBS:** Fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]
+    - **RestingECG:** Resting electrocardiogram results [Normal: Normal, ST-T wave abnormality, Left Ventricular Hypertrophy (LVH)]
+    - **MaxHR:** Maximum heart rate achieved [Numeric value between 60 and 202]
+    - **ExerciseAngina:** Exercise-induced angina [Yes, No]
+    - **Oldpeak:** ST depression induced by exercise relative to rest [Numeric value measured in depression]
+    - **ST_Slope:** The slope of the peak exercise ST segment [Upsloping, Flat, Downsloping]
+    - **HeartDisease:** Output class [1: heart disease, 0: Normal]
 
+    ### Machine Learning Models:
+
+    The "Heart Disease Prediction Using Machine Learning" app employs the following machine learning models:
+
+    - **Multilayer Perceptron (MLP) Classifier:** A neural network model capable of learning complex relationships in the data.
+    - **Random Forest:** A powerful ensemble model that combines multiple decision trees for accurate predictions.
+    - **XGBoost:** An optimized gradient boosting algorithm for high-performance predictions.
+    - **Support Vector Machine (SVM):** A model that finds the best hyperplane to separate data points into different classes.
+
+    After rigorous evaluation and tuning, the best-performing model was selected and deployed to make predictions within this app.
+
+    ### Future Enhancements:
+
+    While the current version of the app is already a valuable tool, potential future enhancements could include:
+
+    - Integration of additional health metrics for even more accurate predictions.
+    - Incorporation of interpretability techniques to provide insights into the model's decision-making process.
+    - User-friendly visualizations to better understand the importance of different features in predictions.
+    - Real-time updates and feedback based on the latest research and medical advancements.
+
+    Thank you for using the "Heart Disease Prediction Using Machine Learning" app. If you have any feedback, questions, or suggestions, please don't hesitate to reach out to me using the contact information provided.
+    *About the Creator:*
+
+    *The "Heart Disease Prediction Using Machine Learning" app was created by Tamilore Olaogun in 2023.*
     ''')
 
     # Button to go to the "Contact" page
