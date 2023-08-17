@@ -1,91 +1,177 @@
 import streamlit as st
 import pandas as pd
+from streamlit_option_menu import option_menu
 import numpy as np
 import joblib
 
-# Load the dataset
-data = pd.read_csv('combined.csv')
 
-# Convert 'Age' column to numeric type
-data['Age'] = pd.to_numeric(data['Age'], errors='coerce')
 
 # Load the trained model
-model = joblib.load('mlp_best_model.joblib')
+model = joblib.load('xgb_best_model.joblib')
 
-# Define the input fields in Streamlit
-# Convert 'Age' column to a NumPy array
-age_values = data['Age'].values
-# Define the input fields in Streamlit
-age = st.slider('Age', min_value=int(age_values.min()), max_value=int(age_values.max()), value=int(np.median(age_values)))
-sex = st.selectbox('Sex', ['Male', 'Female'], index=0)
-chest_pain_type = st.selectbox('Chest Pain Type', data['ChestPainType'].unique())
-# Convert 'RestingBP' column to a NumPy array
-resting_bp_values = data['RestingBP'].values
+# Load the preprocessed dataset
+data = pd.read_csv('combined.csv')
 
-# Define the input fields in Streamlit
-resting_bp = st.slider('Resting Blood Pressure', min_value=int(resting_bp_values.min()), max_value=int(resting_bp_values.max()), value=int(np.median(resting_bp_values)))
+# Define the user interface
+st.set_page_config(page_title="Heart Disease Prediction", page_icon=":heart:")
+from PIL import Image
 
-# Convert 'Cholesterol' column to a NumPy array
-cholesterol_values = data['Cholesterol'].values
+with st.sidebar:
+    selected = option_menu('MENU',
+                          
+                          ['About',
+                           'Heart Disease Prediction',
+                           'Contact'],
+                          icons=['activity','heart','person'],
+                          default_index=0)
 
-# Define the input fields in Streamlit
-cholesterol = st.slider('Cholesterol', min_value=int(cholesterol_values.min()), max_value=int(cholesterol_values.max()), value=int(np.median(cholesterol_values)))
 
-fasting_bs = st.selectbox('Fasting Blood Sugar', ['0', '1'], index=0)
-# Convert 'MaxHR' column to a NumPy array
-max_hr_values = data['MaxHR'].values
+if (selected == 'Heart Disease Prediction'):
+    # Set title
+    st.title('Heart Disease Prediction')
 
-# Define the input fields in Streamlit
-max_hr = st.slider('Maximum Heart Rate', min_value=int(max_hr_values.min()), max_value=int(max_hr_values.max()), value=int(np.median(max_hr_values)))
+    # Convert the 'Age' column to numeric
+    data['Age'] = pd.to_numeric(data['Age'], errors='coerce')
 
-exercise_angina = st.selectbox('Exercise-Induced Angina', ['No', 'Yes'], index=0)
-# Convert 'Oldpeak' column to a NumPy array
-oldpeak_values = data['Oldpeak'].values
+    # Define the input fields in Streamlit
+    age = st.slider('Age', min_value=int(data['Age'].min()), max_value=int(data['Age'].max()), value=int(data['Age'].median()))
+    sex = st.selectbox('Sex', data['Sex'].unique())
 
-# Define the input fields in Streamlit
-oldpeak = st.slider('ST Depression Induced by Exercise Relative to Rest', min_value=float(oldpeak_values.min()), max_value=float(oldpeak_values.max()), value=float(np.median(oldpeak_values)))
+    # Replace the chest_pain_type_mapping with full text representation
+    chest_pain_type_dict = {
+    'ATA': 'Atypical Angina',
+    'NAP': 'Non-Anginal Pain',
+    'ASY': 'Asymptomatic',
+    'TA': 'Typical Angina'
+    }
+    chest_pain_type = st.selectbox('Chest Pain Type', data['ChestPainType'].unique(), format_func=lambda x: chest_pain_type_dict[x])
+    
+    # Convert 'RestingBP' column to a NumPy array
+    resting_bp_values = data['RestingBP'].values
 
-st_slope = st.selectbox('ST Slope', data['ST_Slope'].unique())
-resting_ecg_0 = st.selectbox('Resting ECG 0', ['No', 'Yes'], index=0)
-resting_ecg_1 = st.selectbox('Resting ECG 1', ['No', 'Yes'], index=0)
-resting_ecg_2 = st.selectbox('Resting ECG 2', ['No', 'Yes'], index=0)
+    resting_bp = st.slider('Resting Blood Pressure', min_value=int(resting_bp_values.min()), max_value=int(resting_bp_values.max()), value=int(np.median(resting_bp_values)))
+    # Convert 'Cholesterol' column to a NumPy array
+    cholesterol_values = data['Cholesterol'].values
 
-# Convert categorical variables to numeric values
-sex = 0 if sex == 'Male' else 1
-chest_pain_type = data[data['ChestPainType'] == chest_pain_type].index[0]
-st_slope = data[data['ST_Slope'] == st_slope].index[0]
-fasting_bs = int(fasting_bs)
-exercise_angina = 0 if exercise_angina == 'No' else 1
-resting_ecg_0 = 0 if resting_ecg_0 == 'No' else 1
-resting_ecg_1 = 0 if resting_ecg_1 == 'No' else 1
-resting_ecg_2 = 0 if resting_ecg_2 == 'No' else 1
+    cholesterol = st.slider('Cholesterol', min_value=int(cholesterol_values.min()), max_value=int(cholesterol_values.max()), value=int(np.median(cholesterol_values)))
+    fasting_bs = st.selectbox('Fasting Blood Sugar', data['FastingBS'].unique())
+    resting_ecg = st.selectbox('Resting ECG', data['RestingECG'].unique())
+    # Convert 'MaxHR' column to a NumPy array
+    max_hr_values = data['MaxHR'].values
 
-# Create a feature vector
-feature_vector = np.array([age, sex, chest_pain_type, resting_bp, cholesterol, fasting_bs, max_hr, exercise_angina, oldpeak, st_slope, resting_ecg_0, resting_ecg_1, resting_ecg_2])
+    max_hr = st.slider('Maximum Heart Rate', min_value=int(max_hr_values.min()), max_value=int(max_hr_values.max()), value=int(np.median(max_hr_values)))
+    exercise_angina = st.selectbox('Exercise-Induced Angina', data['ExerciseAngina'].unique())
+    # Convert 'Oldpeak' column to a NumPy array
+    oldpeak_values = data['Oldpeak'].values
 
-# Convert the feature vector to numeric type
-feature_vector = feature_vector.astype(float)
+    oldpeak = st.slider('ST Depression Induced by Exercise Relative to Rest', min_value=float(oldpeak_values.min()), max_value=float(oldpeak_values.max()), value=float(np.median(oldpeak_values)))
+    st_slope = st.selectbox('ST Slope', data['ST_Slope'].unique())
 
-# # Make a prediction
-# prediction = model.predict([feature_vector])[0]
+    # Map the input values to preprocessed dataset values
+    sex_mapping = {'M': 0, 'F': 1}
+    chest_pain_type_mapping = {val: idx for idx, val in enumerate(data['ChestPainType'].unique())}
+    fasting_bs_mapping = {val: idx for idx, val in enumerate(data['FastingBS'].unique())}
+    resting_ecg_mapping = {val: idx for idx, val in enumerate(data['RestingECG'].unique())}
+    exercise_angina_mapping = {val: idx for idx, val in enumerate(data['ExerciseAngina'].unique())}
+    st_slope_mapping = {val: idx for idx, val in enumerate(data['ST_Slope'].unique())}
 
-# # Display the prediction
-# st.header('Heart Disease Prediction')
-# if prediction == 0:
-#     st.write('The model predicts that the individual does not have heart disease.')
-# else:
-#     st.write('The model predicts that the individual has heart disease.')
-# Create a button
-prediction_button = st.button('Predict')
+    sex = sex_mapping[sex]
+    chest_pain_type = chest_pain_type_mapping[chest_pain_type]
+    fasting_bs = fasting_bs_mapping[fasting_bs]
+    resting_ecg = resting_ecg_mapping[resting_ecg]
+    exercise_angina = exercise_angina_mapping[exercise_angina]
+    st_slope = st_slope_mapping[st_slope]
 
-# Check if the button is clicked
-if prediction_button:
-    # Make a prediction
-    prediction = model.predict([feature_vector])[0]
+    # Create a feature vector from the input values
+    input_data = np.array([[age, sex, chest_pain_type, resting_bp, cholesterol, fasting_bs,
+                            resting_ecg, max_hr, exercise_angina, oldpeak, st_slope]])
 
-    # Display the prediction
-    st.header('Heart Disease Prediction')
-    if prediction == 0:
-        st.write('The model predicts that the individual does not have heart disease.')
-    else:
-        st.write('The model predicts that the individual has heart disease.')
+    # Define the prediction button
+    if st.button('Predict Heart Disease'):
+        # Make the prediction
+        prediction = model.predict(input_data)
+        
+        # Display the prediction result
+        if prediction[0] == 1:
+            st.write('There is a heart disease.')
+        else:
+            st.write('There is no heart disease.')
+
+def app():
+    st.title("Contact")
+
+    st.write('''
+    ----
+    *Thank you for using the Heart Disease Prediction using ML app! If you have any feedback or suggestions, please feel free to reach out to us.*
+
+    **Contact Information:**
+
+    **Email:** olaoguntamilore@gmail.com
+
+    **Github** https://github.com/tamilore3000
+
+    
+    ''')
+
+if (selected == 'About'):
+
+    st.title("About Heart Disease Prediction Using Machine Learning")
+    st.write('''
+    ----
+    ## Welcome to the "Heart Disease Prediction Using Machine Learning" App!
+
+    This app is designed to provide a powerful tool for predicting the presence of heart disease in patients based on various health parameters. By leveraging machine learning techniques, I aim to assist medical professionals in making accurate predictions about heart health.
+
+    ### Project Overview:
+
+    In the pursuit of creating an effective heart disease prediction model, I have utilized a diverse dataset containing a wide range of health metrics. By analyzing and understanding the relationship between these metrics and the presence of heart disease, I've developed a robust machine learning model.
+
+    ### Dataset Description:
+
+    The dataset used in this project contains information about various health parameters of patients. Here's a breakdown of the dataset columns:
+
+    - **Age:** Age of the patient [years]
+    - **Sex:** Sex of the patient [Male, Female]
+    - **ChestPainType:** Chest pain type [Typical Angina, Atypical Angina, Non-Anginal Pain, Asymptomatic]
+    - **RestingBP:** Resting blood pressure [mm Hg]
+    - **Cholesterol:** Serum cholesterol [mm/dl]
+    - **FastingBS:** Fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]
+    - **RestingECG:** Resting electrocardiogram results [Normal: Normal, ST-T wave abnormality, Left Ventricular Hypertrophy (LVH)]
+    - **MaxHR:** Maximum heart rate achieved [Numeric value between 60 and 202]
+    - **ExerciseAngina:** Exercise-induced angina [Yes, No]
+    - **Oldpeak:** ST depression induced by exercise relative to rest [Numeric value measured in depression]
+    - **ST_Slope:** The slope of the peak exercise ST segment [Upsloping, Flat, Downsloping]
+    - **HeartDisease:** Output class [1: heart disease, 0: Normal]
+
+    ### Machine Learning Models:
+
+    The "Heart Disease Prediction Using Machine Learning" app employs the following machine learning models:
+
+    - **Multilayer Perceptron (MLP) Classifier:** A neural network model capable of learning complex relationships in the data.
+    - **Random Forest:** A powerful ensemble model that combines multiple decision trees for accurate predictions.
+    - **XGBoost:** An optimized gradient boosting algorithm for high-performance predictions.
+    - **Support Vector Machine (SVM):** A model that finds the best hyperplane to separate data points into different classes.
+
+    After rigorous evaluation and tuning, the best-performing model was selected and deployed to make predictions within this app.
+
+    ### Future Enhancements:
+
+    While the current version of the app is already a valuable tool, potential future enhancements could include:
+
+    - Integration of additional health metrics for even more accurate predictions.
+    - Incorporation of interpretability techniques to provide insights into the model's decision-making process.
+    - User-friendly visualizations to better understand the importance of different features in predictions.
+    - Real-time updates and feedback based on the latest research and medical advancements.
+
+    Thank you for using the "Heart Disease Prediction Using Machine Learning" app. If you have any feedback, questions, or suggestions, please don't hesitate to reach out to me using the contact information provided.
+    *About the Creator:*
+
+    *The "Heart Disease Prediction Using Machine Learning" app was created by Tamilore Olaogun in 2023.*
+    ''')
+
+    # Button to go to the "Contact" page
+    if st.button("Contact Us"):
+        app()
+
+if (selected == 'Contact'):
+    app()
